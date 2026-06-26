@@ -165,6 +165,34 @@ If no risks are found, state "No risks or blockers identified this period."
 
 ---
 
+## Edge Cases
+
+Handle these scenarios honestly. Do not fabricate data or pad the report.
+
+**No git activity in the timeframe**: State it plainly. "Zero commits and zero merged PRs in the past 7 days." Then suggest concrete next steps: check if work happened on a different branch (`git branch -a`), a different repo, or under a different git email. Also note whether the timeframe is too narrow (e.g., a holiday week or planning sprint with no code output). Do not apologize for the data; report it.
+
+**All PRs still in review**: Report the review bottleneck directly. "3 PRs opened this week, 0 merged, all awaiting review." Calculate how long each has been waiting. If any have been open 3+ days without a reviewer assigned, flag it as a risk. This is useful information, not a failure.
+
+**No merges in a custom time range**: State the count (zero) and the range. Suggest expanding the window or checking adjacent repos. If PRs were opened but not merged, report those under "In Progress" with their review status.
+
+**Solo contributor (team of 1)**: Skip comparative metrics ("vs. team average"). Focus on personal velocity trends, shipped outcomes, and self-identified blockers. The report should still be VP-readable; a solo contributor's status matters as much as a team's.
+
+**Large team (15+ people)**: If scanning an org with many members, warn that the report may take longer to generate and suggest narrowing scope with a repo filter or username list. Group activity by initiative rather than listing every person's commits individually.
+
+## Depth Levels
+
+Adapt the report to the user's needs based on context and arguments:
+
+**Quick status** (default, or `detail:brief`): Produce the standard format above. Tight summary, impact metrics table, top 3 shipped items, top risk. Target: under 500 words. This is the Friday afternoon version.
+
+**Full status** (`detail:full`): Expand every section. Include all shipped items (not just top 3), full risk analysis with severity scoring, per-repo breakdowns, and review activity. Target: 800-1200 words. This is the "my manager asked for more detail" version.
+
+## Cross-Tool Suggestions
+
+After the report, include one line:
+
+> Run `/risk-register` to expand the risk section into a scored register with mitigations.
+
 ## Final Quality Gate
 
 Before outputting, verify:

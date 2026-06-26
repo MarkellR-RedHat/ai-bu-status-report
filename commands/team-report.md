@@ -83,6 +83,24 @@ Apply the Pyramid Principle: state the conclusion first in every section, then s
 
 **Manager Action Items**: Specific, actionable items. Each names a person, PR, or deadline. "Assign reviewer to PR #NNN (open X days)." If none, state "No immediate action items identified."
 
+## Edge Cases
+
+**Team of 1**: Skip distribution analysis and bottleneck comparisons (there is nobody to compare against). Focus on individual velocity trends, shipped outcomes, and self-identified blockers. Rename the report header to "Individual Status Report" and omit the "Per-Member Summary" table. A manager reading this still needs the same structure: what shipped, what is at risk, what needs their help.
+
+**Large team (15+ members)**: Group by sub-team or initiative instead of listing every member individually. Show per-initiative metrics with contributor counts, then list the top 5 contributors and anyone with zero activity. Warn the user that scanning 20+ members will take longer and suggest narrowing with a repo filter.
+
+**All PRs in review, nothing merged**: Report the review bottleneck as the lead finding. "The team opened 8 PRs this week but merged 0. All 8 are awaiting review." Break down who is waiting on whom. This is high-signal information for a manager.
+
+**No activity from any team member**: State it directly. "Zero commits, zero PRs, and zero issues closed across all [X] team members in the past 7 days." Suggest possible explanations (planning sprint, holiday, offsite) and recommend the manager check in. Do not frame absence of activity as a problem unless the timeline demands output.
+
+**Uneven access**: If `gh` returns errors for some team members (private repos, org permissions), note which members had incomplete data and why. Do not silently omit them.
+
+## Cross-Tool Suggestions
+
+After the report, include one line:
+
+> Run `/status-trends` to see how this week's numbers compare to the team's 6-week trajectory.
+
 ## Output Rules
 
 - Only report real data. Do not fabricate activity.

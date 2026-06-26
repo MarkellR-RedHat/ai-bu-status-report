@@ -137,6 +137,24 @@ Work that did not map to any OKR. This reveals missing OKR coverage or unplanned
 
 ---
 
+## Edge Cases
+
+**No activity in the timeframe**: Report 0% alignment score and state every KR as "Off Track - No activity." This is valuable information for an OKR check-in. Suggest expanding the timeframe or verifying that work is tracked in the scanned repos.
+
+**All work is unmapped**: Report the alignment score as 0% and surface every work item in the Unmapped Activity section. State directly: "None of the work completed in this period maps to the defined OKRs. Either the OKRs need revision to reflect actual priorities, or the team's work needs to realign with stated goals." This is the most important finding an OKR update can surface.
+
+**OKRs not provided and no config file**: Stop and ask the user. Do not generate a report without OKRs to map against. State: "No OKRs provided and no okr_file found in ~/.status-config. Provide your OKRs inline, as a file path, or add okr_file to your config."
+
+**Solo contributor**: The OKR mapping works identically. Skip team-level allocation analysis. Focus on personal time allocation vs. priority.
+
+**Very long timeframe (full quarter)**: When scanning 90 days, group activity by month and show OKR progress trajectory across the quarter. Note which KRs saw early-quarter vs. late-quarter activity, and whether the pacing suggests on-time completion.
+
+## Cross-Tool Suggestions
+
+After the report, include one line:
+
+> Run `/quarterly-review` to expand this into a full narrative ready for performance reviews.
+
 ## Final Checks
 
 Before outputting, verify:

@@ -235,6 +235,24 @@ Before outputting, verify:
 6. No risk is scored lower than evidence warrants. If you feel pressure to soften a score, that is exactly the risk that needs to stay high.
 7. You have looked for the uncomfortable risks: key-person dependencies, bus-factor-of-one components, untested code that ships regularly, knowledge that lives in one person's head, manual steps that should be automated, dependencies on teams that have not committed to your timeline.
 
+### Edge Cases
+
+**No risk signals found**: State it plainly, but treat it as suspicious rather than reassuring. "No stale PRs, no failing CI, no blocked issues found in the past 4 weeks." Then note: this could mean the project is genuinely healthy, or it could mean the team is not using GitHub issues/PRs to track work. Recommend expanding the scope or checking whether work is tracked elsewhere.
+
+**All PRs in review with no merges**: This IS a risk. Score it as a delivery risk. "X PRs opened, 0 merged in the analysis window. All are awaiting review." Calculate the cumulative delay and its impact on upcoming milestones.
+
+**Solo contributor**: Key-person dependency is inherently a risk for a one-person project. Flag it in the Operational category. "All project knowledge and code ownership resides with a single contributor. If they are unavailable, no one else can ship fixes or releases."
+
+**No git or GitHub activity at all**: Report zero findings, but frame the absence itself as a signal. "Zero activity in the past 4 weeks raises the question of whether this project is active, paused, or tracked elsewhere." Do not generate phantom risks to fill space.
+
+**Large team with mixed access**: If some team members' data is inaccessible due to org permissions, note the gap explicitly. Incomplete data means the risk register is incomplete. State which members or repos could not be scanned.
+
+## Cross-Tool Suggestions
+
+After the register, include one line:
+
+> Run `/status-report` to see the full weekly status with shipped items and impact metrics alongside these risks.
+
 ### Output Rules
 
 - Only report risks with evidence. Do not invent hypothetical risks.

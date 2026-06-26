@@ -80,6 +80,22 @@ Only include if leadership action is required. If nothing, omit entirely.
 - [Specific issue] - [what is needed: decision, resource, escalation]
 ---
 
+## Edge Cases
+
+**No merged PRs or closed issues in the timeframe**: Do not generate a fake summary. State the data clearly: "No PRs merged and no issues closed in the past 7 days." Then produce a short executive summary focused on what IS happening: open PRs in review, planning activity, or context (holiday week, planning sprint, team offsite). If there is genuinely nothing, say so and recommend checking a different repo or expanding the timeframe. A VP would rather know "the team was in planning mode with no code shipped" than read a padded summary.
+
+**All PRs awaiting review**: Lead with the bottleneck. "3 PRs opened, 0 merged. All are awaiting review." Frame this as a status: YELLOW, with a clear ask to assign reviewers.
+
+**Solo contributor**: The exec summary format works the same. Adjust pronouns ("shipped" instead of "the team shipped") and skip team-level metrics.
+
+**Board-level audience** (`for:board`): Eliminate all engineering terminology. Translate repos into product areas, PRs into "releases" or "updates," and latency into "response time." Every sentence must make sense to someone who has never written a line of code.
+
+## Cross-Tool Suggestions
+
+After the summary, include one line:
+
+> Run `/stakeholder-view` to generate this same data tailored to a different audience (exec, pm, eng, or external).
+
 ## Quality Gate
 
 Before outputting, verify: (1) the summary is under 100 words and you counted, (2) the first sentence contains a number and a concrete outcome, (3) every sentence would make sense to someone who has never seen a terminal, (4) no sentence uses "progress," "various," or "several" without a real number, (5) a VP could forward this with zero edits, (6) the status color is justified by evidence not optimism, (7) active voice throughout, (8) "Needs Attention" includes a specific ask not just a problem statement, (9) if audience is "for:board" or "for:vp" then zero technical jargon remains, and (10) nothing is fabricated. Only report what the data shows.
