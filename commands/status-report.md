@@ -1,13 +1,15 @@
 # Weekly Status Report Generator
 
-Generate a weekly status report by scanning git activity, GitHub PRs, and issues.
+Generate a weekly status report that reads like a seasoned PM wrote it. Every claim backed by data, every status justified by evidence, every risk paired with a mitigation.
 
 ## Arguments
 
-$ARGUMENTS can be used to specify:
-- A custom timeframe (e.g., "last 2 weeks", "since 2024-01-15")
-- A specific repo filter (e.g., "repo:ai-bu-hub-build")
-- Both combined (e.g., "last 2 weeks repo:ai-bu-hub-build")
+$ARGUMENTS can specify:
+- A custom timeframe (e.g., "last 2 weeks", "since 2025-06-01")
+- A specific repo filter (e.g., "repo:my-org/my-repo")
+- Focus area (e.g., "focus:engineering" or "focus:content")
+- Output detail level (e.g., "detail:brief" or "detail:full")
+- Both combined (e.g., "last 2 weeks repo:my-org/my-repo focus:engineering")
 
 If no arguments are provided, default to the past 7 days across all repos the user has access to.
 
@@ -20,6 +22,27 @@ if [ -f "$HOME/.status-config" ]; then
   cat "$HOME/.status-config"
 fi
 ```
+
+## Thinking Process
+
+Before generating any output, work through this chain of thought silently:
+
+1. **Quantify what shipped**: Count every PR merged, issue closed, and commit landed. Do not proceed until you have exact numbers.
+2. **Assess trajectory against goals**: Compare this week's output to last week if data is available. Is velocity increasing, flat, or declining?
+3. **Identify risks with specifics**: Any PR open more than 5 days without review? Any failing CI? Any blocked issues? Each risk needs a concrete description and a recommended action.
+4. **Build the narrative**: What story does the data tell? "We shipped X, which unblocks Y, but Z is at risk because W."
+5. **Self-critique before output**: Verify every claim has a number or link. Remove any sentence containing "some progress," "good momentum," "making progress," or "on track" unless backed by specific evidence. Ensure no bad news is hidden behind positive framing.
+
+## Anti-Patterns to Avoid
+
+Do NOT:
+- List activities without outcomes ("updated the repo" tells the reader nothing)
+- Report "on track" without evidence (what metric proves it?)
+- Hide bad news in positive framing ("despite challenges, we made progress" is a red flag)
+- Use "making progress" without specifying exactly how much
+- Say "several" or "various" or "many" when you have exact counts
+- Write "worked on X" instead of "shipped X" or "X is at 60% complete"
+- Include filler items to make the report look busier than it is
 
 ## Instructions
 
@@ -89,20 +112,46 @@ gh search issues --assignee=@me --state=open --json title,url,repository,labels,
 gh search prs --author=@me --state=open --json title,url,repository,createdAt,labels
 ```
 
-### Step 6: Categorize Work into Themes
+### Step 6: Detect Risks and Blockers
 
-Review all collected data and group items into these categories:
+Actively scan for problems. Do not wait for the user to flag these.
 
-- **Content**: Documentation, blog posts, tutorials, presentations, demos
-- **Engineering**: Code contributions, bug fixes, new features, infrastructure work
-- **Reviews**: PR reviews, code review comments, design review participation
-- **Community**: Issue triage, community responses, upstream contributions, conference work
+```bash
+# PRs open more than 5 days without a review
+gh search prs --author=@me --state=open --created="<$(date -v-5d +%Y-%m-%d)" --json title,url,repository,createdAt,reviewDecision
 
-Use commit messages, PR titles, and issue titles to determine the best category. If something does not fit neatly, use your best judgment.
+# PRs with failing CI checks
+gh pr list --author=@me --state=open --json title,url,statusCheckRollup
+```
 
-### Step 7: Generate the Status Report
+For each risk found, classify it:
+- **Severity**: How bad is it if this is not resolved? (blocks release, slows team, cosmetic)
+- **Urgency**: When does this need action? (today, this week, next sprint)
+- **Recommended action**: What specific step should be taken? (assign reviewer X, rebase and re-run CI, escalate to tech lead)
 
-Output the report in **exactly** this structure. Do not add, remove, or rename sections.
+### Step 7: Categorize Work into Themes
+
+Review all collected data and group items by outcome, not activity:
+
+- **Shipped**: Merged PRs, closed issues, completed deliverables. What is done and in production or main?
+- **Engineering**: Code contributions with measurable impact (performance gains, bug fixes with user impact, new capabilities)
+- **Content**: Documentation, blog posts, tutorials, presentations. Only include if they shipped (merged), not drafts.
+- **Reviews**: PR reviews with specifics (how many lines reviewed, any significant feedback given)
+- **Community**: Issue triage, upstream contributions, conference talks. Include links.
+
+### Step 8: Apply the "So What?" Test
+
+For every bullet point in the report, ask: "So what? Why does this matter?" If the answer is not obvious from the bullet itself, rewrite it to include the impact.
+
+Bad: "Updated Helm chart values"
+Good: "Updated Helm chart to support multi-model routing, unblocking the Q3 inference gateway milestone (PR #51, +67/-23 lines)"
+
+Bad: "Fixed bug in batch processor"
+Good: "Fixed token counting bug that was causing 15% overcharging on batch inference requests (PR #38, +28/-12 lines)"
+
+### Step 9: Generate the Status Report
+
+Output the report in this structure:
 
 ---
 
@@ -110,68 +159,79 @@ Output the report in **exactly** this structure. Do not add, remove, or rename s
 
 **Period**: [start date] to [end date]
 **Author**: [git user name]
-**Repos scanned**: [list of repos included]
+**Repos**: [list of repos included]
 
-### Impact Summary
+### Summary
 
-| Metric | Count |
-|--------|-------|
-| Commits | X |
-| PRs Opened | X |
-| PRs Merged | X |
-| PRs Reviewed | X |
-| Issues Closed | X |
-| Lines Added | +X |
-| Lines Removed | -X |
+Write 2-3 sentences that tell the story of the week. Lead with the most important thing that shipped. Mention any significant risk. Use this pattern: "This week shipped [biggest deliverable], which [why it matters]. [Secondary accomplishments]. [Risk or upcoming item that needs attention]."
 
-### Completed
+### Impact Metrics
 
-Group completed items by theme. Each item must include a brief description AND a link to the PR or issue when available.
+| Metric | This Week | Trend |
+|--------|-----------|-------|
+| Commits | X | [up/down/flat vs last week if data available] |
+| PRs Merged | X | |
+| PRs Reviewed | X | |
+| Issues Closed | X | |
+| Lines Changed | +X / -Y | |
 
-**Engineering**
-- [item description] ([PR #NNN](url)) - [+X/-Y lines]
+### What Shipped
 
-**Content**
-- [item description] ([link if available])
+Group by significance, not by type. Lead with the highest-impact items.
 
-**Reviews**
-- Reviewed [PR title] ([PR #NNN](url))
+Each item follows this format:
+- **[Outcome description]** ([PR #NNN](url)) - +X/-Y lines
+  - Why it matters: [one sentence on impact or what it unblocks]
 
-**Community**
-- [item description] ([link if available])
-
-Only include theme headings that have items. If a theme has no items, omit it entirely.
+Only include items that are done (merged PRs, closed issues). Do not list work-in-progress here.
 
 ### In Progress
 
-List open PRs and any work that appears ongoing based on recent commits without a corresponding merged PR. Include links where available.
+List open PRs and active work. For each item, include:
+- What it is and why it matters
+- How far along it is (if assessable from commits or PR description)
+- How many days it has been open
+- Whether it has reviewers assigned
 
-- [item description] ([PR #NNN](url)) - opened [date], [X days old]
+Format:
+- **[Description]** ([PR #NNN](url)) - opened [date], [X days old], [reviewers: @name or "no reviewer assigned"]
 
 ### Planned Next Week
 
-Populate this from open issues assigned to the user (gathered in Step 5). List each with its repo and any milestone or label context.
+Populate from open issues assigned to the user. For each item, include the repo, milestone context, and why it is the priority.
 
-- [issue title] ([repo name], [milestone if any]) ([Issue #NNN](url))
+- **[Issue title]** ([Issue #NNN](url)) - [repo name], [milestone if any]
 
-If no open assigned issues are found, state: "No assigned issues found. Fill in manually or assign issues to yourself on GitHub."
+If no open assigned issues are found, state: "No assigned issues found. Update your GitHub issues or fill in manually."
 
-### Blockers
+### Risks and Blockers
 
-Check for:
-- PRs that have been open for more than 5 days without review
-- Issues labeled as "blocked" or "waiting"
-- Any failed CI checks on open PRs
+For each identified risk:
 
-If no blockers are found, state "No blockers identified."
+| Risk | Severity | Days Open | Recommended Action |
+|------|----------|-----------|-------------------|
+| [Description with link] | [High/Medium/Low] | [X days] | [Specific action] |
+
+If no risks are found, state "No risks or blockers identified this period."
 
 ---
 
+### Final Quality Check
+
+Before outputting the report, verify:
+1. Every bullet has a number, a link, or both. Remove any that do not.
+2. No weasel words survive: "some," "several," "various," "good," "great," "significant progress" are all banned unless followed by a specific metric.
+3. The Summary section could stand alone as an email to a VP. If not, rewrite it.
+4. Bad news is stated directly, not buried. If a PR has been waiting 10 days for review, say so plainly.
+5. The "So What?" test passes for every bullet in "What Shipped."
+6. Status colors or labels are justified by evidence, not vibes.
+
 ### Output Rules
 
-- Keep descriptions concise. One line per item.
-- Always quantify: include PR numbers, line counts, issue counts. Do not use vague language like "several" or "various."
-- If data is sparse (fewer than 3 commits and no PRs), note that and suggest the user may want to expand the timeframe.
+- Keep descriptions concise but impactful. One to two lines per item.
+- Always quantify: include PR numbers, line counts, issue counts.
+- If data is sparse (fewer than 3 commits and no PRs), note that explicitly and suggest expanding the timeframe.
 - If GitHub CLI is not authenticated, inform the user and provide instructions: `gh auth login`.
 - Do not fabricate activity. Only report what the data shows.
 - Use the report format specified in `~/.status-config` if one is set (markdown or plain text). Default to markdown.
+- Write in active voice. "Shipped," "Fixed," "Closed" not "was shipped," "was fixed," "was closed."
