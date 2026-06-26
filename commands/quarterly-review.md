@@ -12,6 +12,16 @@ $ARGUMENTS can be used to specify:
 
 If no arguments are provided, default to the past 90 days.
 
+## Config File Support
+
+Before starting, check if `~/.status-config` exists. If it does, read it and apply any defaults (repos, org, format). Config values are overridden by explicit $ARGUMENTS.
+
+```bash
+if [ -f "$HOME/.status-config" ]; then
+  cat "$HOME/.status-config"
+fi
+```
+
 ## Instructions
 
 ### Step 1: Determine Timeframe
@@ -36,6 +46,9 @@ git log --since="<start_date>" --until="<end_date>" --author="<user>" --pretty=f
 
 # Get a summary of file changes for impact analysis
 git log --since="<start_date>" --until="<end_date>" --author="<user>" --stat --no-merges
+
+# Total commit count
+git log --since="<start_date>" --until="<end_date>" --author="<user>" --oneline --no-merges | wc -l
 ```
 
 ### Step 3: Gather All GitHub Activity
@@ -65,16 +78,21 @@ Use repo names, PR titles, and commit messages to identify these groupings. If t
 
 ### Step 5: Calculate Impact Metrics
 
-For each project/initiative, calculate:
+For each project/initiative, calculate these exact numbers:
 - Total PRs opened, merged, and reviewed
 - Total issues closed
 - Lines of code added and removed (from PR data or git stats)
 - Number of repos contributed to
-- Average PR turnaround time (created to merged)
+- Average PR turnaround time (created to merged) in days
+
+At the overall level, also compute:
+- Total commits across all repos
+- Week-over-week activity trend (increasing, steady, or decreasing)
+- Busiest week by commit count
 
 ### Step 6: Generate the Quarterly Report
 
-Output the report in this format:
+Output the report in **exactly** this structure. Do not add, remove, or rename sections.
 
 ---
 
@@ -82,10 +100,25 @@ Output the report in this format:
 
 **Period**: [start date] to [end date]
 **Author**: [git user name]
+**Repos**: [total count of repos contributed to]
 
 ### Executive Summary
 
-Write 2-3 sentences summarizing the quarter's work at a high level. Mention the number of PRs merged, issues closed, and repos contributed to. Highlight the most significant initiative or accomplishment.
+Write 2-3 sentences summarizing the quarter's work at a high level. Include specific numbers: X PRs merged across Y repos, Z issues closed, N total commits. Highlight the single most significant initiative or accomplishment.
+
+### Metrics Summary
+
+| Metric | Count |
+|--------|-------|
+| Total Commits | X |
+| PRs Opened | X |
+| PRs Merged | X |
+| PRs Reviewed | X |
+| Issues Closed | X |
+| Repos Contributed To | X |
+| Lines Added | +X |
+| Lines Removed | -X |
+| Avg PR Turnaround | X days |
 
 ### Work by Initiative
 
@@ -97,12 +130,12 @@ For each identified initiative or project:
 **Impact**: [X PRs merged, Y issues closed, +Z/-W lines changed]
 
 Key accomplishments:
-- [accomplishment 1]
+- [accomplishment with specific metrics, e.g., "Reduced inference latency by 30% (PR #42)"]
 - [accomplishment 2]
 - [accomplishment 3]
 
 Notable PRs:
-- [PR title] ([PR #NNN](url))
+- [PR title] ([PR #NNN](url)) - [+X/-Y lines]
 
 #### [Next Initiative]
 
@@ -110,41 +143,31 @@ Notable PRs:
 
 ### Review Activity
 
-Summarize code review contributions:
+Summarize code review contributions with exact counts:
 - Total PRs reviewed: [count]
 - Repos reviewed across: [list]
-- Notable reviews: [list any large or significant PRs reviewed]
+- Notable reviews: [list any large or significant PRs reviewed, with line counts]
 
 ### Community and Collaboration
 
 - Issues triaged or responded to: [count]
-- Upstream contributions: [list any]
-- Cross-team collaboration: [note any PRs or issues involving other teams]
-
-### Metrics Summary
-
-| Metric | Count |
-|--------|-------|
-| PRs Opened | X |
-| PRs Merged | X |
-| PRs Reviewed | X |
-| Issues Closed | X |
-| Repos Contributed To | X |
-| Lines Added | X |
-| Lines Removed | X |
+- Upstream contributions: [list any with links]
+- Cross-team collaboration: [note any PRs or issues involving other teams, with links]
 
 ### Looking Ahead
 
 Based on open PRs and recent activity patterns, note:
-- Work that is still in progress
+- Work that is still in progress (with links to open PRs)
 - Areas that may need continued attention
 - Any open blockers or risks
 
 ---
 
-### Notes
+### Output Rules
 
 - This report pulls real data only. It does not fabricate or estimate activity.
+- Always use exact numbers. Never say "several," "many," or "various." If the count is 0, say 0.
 - If GitHub CLI is not authenticated, the report will be limited to local git data. Run `gh auth login` to enable full GitHub scanning.
 - For very active quarters, the output may be long. The user can filter by repo or org to narrow scope.
 - If data appears incomplete, suggest expanding the search to additional repo directories or checking that the git author email matches across all repos.
+- Use the report format specified in `~/.status-config` if one is set. Default to markdown.
