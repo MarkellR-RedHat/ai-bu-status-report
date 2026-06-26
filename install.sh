@@ -9,7 +9,7 @@ SOURCE_DIR="$SCRIPT_DIR/commands"
 
 echo ""
 echo "  ai-bu-status-report"
-echo "  Status reports a VP would forward to their boss."
+echo "  Status reports worth reading."
 echo ""
 
 # Create the commands directory if it does not exist

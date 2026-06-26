@@ -1,10 +1,10 @@
 # ai-bu-status-report
 
-It's 4:30 PM on Friday. Your status report is due in 30 minutes. You've been heads-down in code all week and can't remember what happened Monday. You open a blank doc and start typing "Made progress on..." before deleting it because even you know that's useless.
+It's 4:30 PM on Friday. Your status report is due in 30 minutes. You've been heads-down in code all week and can't remember what happened Monday. You open a blank doc, start typing "Made progress on...", then delete it because even you know that's useless.
 
-These Claude Code slash commands fix that. They scan your git history, GitHub PRs, and issues, then generate status reports that read like a seasoned PM wrote them. Every claim backed by data. Every status justified by evidence. Every risk paired with a mitigation.
+These Claude Code slash commands fix that. They scan your git history, GitHub PRs, and issues, then generate status reports that a seasoned PM would sign off on. Every claim backed by data. Every status justified by evidence. Every risk paired with a mitigation.
 
-The result looks like this:
+Here is what the output looks like:
 
 ```
 ## Executive Summary
@@ -18,13 +18,13 @@ assigned this week to hit the July 15 feature-complete deadline.
 Status: GREEN - 3 of 4 Q3 deliverables complete, 2 weeks of buffer remaining
 ```
 
-That is a paragraph a VP would forward to their boss. No editing. No context needed.
+A VP would forward that to their boss. No editing. No context needed.
 
 ## The Problem
 
-Status reports should be strategic documents, but most people write them like activity logs. "Updated the Helm chart." "Worked on the API." "Attended planning meeting." Nobody reading that knows whether the project is on track, what shipped, or what needs their help.
+Status reports should be strategic documents, but most engineers write them like activity logs. "Updated the Helm chart." "Worked on the API." "Attended planning meeting." Nobody reading that knows whether the project is on track, what shipped, or what needs their help.
 
-The person reading your status report has 14 other reports to read. They will spend 30 seconds on yours. What do you want them to remember?
+The person reading your status report has 14 other reports to read and will spend 30 seconds on yours. What do you want them to remember?
 
 These commands apply three principles to every report:
 
@@ -32,7 +32,7 @@ These commands apply three principles to every report:
 
 2. **The "So What?" Test**: Every bullet must answer "why does this matter?" without the reader asking. Not "Updated Helm chart values" but "Updated Helm chart to support multi-model routing, unblocking the Q3 milestone (PR #51)."
 
-3. **Honest Risk Surfacing**: Bad news stated directly, not buried behind positive framing. "PR #50 has been open 12 days with no reviewer" not "we continue to make progress on the quota API."
+3. **Honest Risk Surfacing**: Bad news stated directly, not buried behind positive framing. "PR #50 has been open 12 days with no reviewer assigned" not "we continue to make progress on the quota API."
 
 ## Commands
 
@@ -210,7 +210,7 @@ Every command uses three frameworks to ensure quality:
 
 **SCQA (Situation, Complication, Question, Answer)**: Structures narratives so they tell a story. "The inference gateway is on track for Q3 GA (Situation). Load testing revealed p99 latency spikes at 200+ concurrent requests (Complication). The team redesigned the scheduling loop, cutting p99 by 40% (Answer)."
 
-**Traffic Light Criteria**: Status colors earned by evidence, not vibes. GREEN requires no blockers, steady velocity, and next milestone reachable. YELLOW requires naming the specific risk and the mitigation. RED requires a specific ask.
+**Traffic Light Criteria**: Status colors earned by evidence, not vibes. GREEN means no blockers, steady velocity, and next milestone reachable. YELLOW means a named risk threatens the timeline, with mitigation in progress. RED means a blocker the team cannot resolve alone, with a specific ask.
 
 **The "So What?" Test**: Every bullet must include impact. "Fixed bug in batch processor" becomes "Fixed token counting bug causing 15% overcharging on batch inference requests (PR #38)."
 
@@ -224,7 +224,7 @@ Without `gh` authentication, the commands still work but are limited to local gi
 
 ## How It Works
 
-These are Claude Code slash commands: markdown files that act as prompt templates with embedded shell commands for data gathering. When you run `/status-report`, Claude Code reads the command file, executes the shell commands to gather your git and GitHub data, applies chain-of-thought reasoning and quality checks, and formats the results into a presentation-ready report.
+These are Claude Code slash commands: markdown files that act as prompt templates with embedded shell commands for data gathering. When you run `/status-report`, Claude Code reads the command file, executes the shell commands to gather your git and GitHub data, applies structured reasoning and quality checks, then formats the results into a report ready to send.
 
 No external services. No API keys beyond what Claude Code and `gh` already use. Your data stays local.
 

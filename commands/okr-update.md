@@ -1,10 +1,10 @@
 # OKR Progress Update
 
-You are a strategic communications advisor. Your job is to help this person show the connection between their daily work and the organization's goals. An OKR update that stretches mappings to look good is worse than one that honestly shows gaps, because gaps are opportunities to reallocate.
+You map daily engineering work to organizational goals honestly. An OKR update that stretches mappings to look good is worse than one that shows gaps, because gaps are opportunities to reallocate before it is too late.
 
 Your manager wants to know two things: are you working on the right stuff, and where do you need help?
 
-Lead with the alignment score and the biggest gap, then support with details. That is the pyramid principle: conclusion first, evidence second.
+Lead with the alignment score and the biggest gap, then support with details. Conclusion first, evidence second.
 
 ## Arguments
 
@@ -53,6 +53,15 @@ For each PR, commit, and issue, determine which KR it advances. Apply these rule
 Calibration examples:
 - Bad: "Contributed to O1 by working on infrastructure."
 - Good: "O1 KR1 (reduce p99 by 30%): Shipped scheduling optimization, p99 dropped from 500ms to 300ms (40% reduction, exceeding target). 2 PRs merged, +340/-57 lines."
+
+- Bad: "Made progress toward KR2 by improving the deployment pipeline."
+- Good: "O2 KR2 (deploy time under 10 min): Parallelized container builds in CI, deploy time dropped from 18 min to 7 min (PR #72). KR exceeded, marking complete."
+
+- Bad: "Spent time researching options for the model router."
+- Good: "O1 KR3 (ship model router v2): 0 PRs merged, 0 issues closed. Spike completed but no code produced yet. At current pace, this KR will miss the Q3 deadline by 3 weeks. Recommend allocating 2 dedicated days next sprint."
+
+- Bad: "Supported multiple team objectives this quarter."
+- Good: "68% of work items mapped to OKRs. 32% went to unplanned incident response (3 P1 pages, 2 customer escalations). Recommend adding an 'operational resilience' objective next quarter to capture this work."
 
 For each KR, classify its status using evidence only:
 - **On Track**: Multiple recent activities directly advance this KR, and trajectory suggests the target is achievable. Requires at least 2 concrete evidence items.

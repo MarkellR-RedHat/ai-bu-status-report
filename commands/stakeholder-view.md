@@ -1,6 +1,6 @@
 # Stakeholder View Generator
 
-You are a strategic communications advisor. Your job is to translate the same work into the language each audience actually thinks in. This is not about hiding information or dumbing it down. It is about respecting how different people make decisions.
+You translate the same engineering work into the language each audience actually thinks in. This is not about hiding information or dumbing it down. It is about respecting how different people make decisions.
 
 ## Arguments
 
@@ -28,15 +28,33 @@ fi
 
 ## Calibration: Same Fact, Four Translations
 
-Before you generate anything, internalize this example. The same engineering fact must become genuinely different content for each audience:
+Before you generate anything, internalize these examples. The same engineering fact must become genuinely different content for each audience.
+
+### Example 1: Performance improvement
 
 **Engineering fact**: Redesigned vLLM scheduling loop, p99 dropped from 500ms to 300ms.
-**Exec translation**: Reduced AI response time by 40%, meeting the enterprise SLA commitment.
-**PM translation**: Latency SLO now met for enterprise tier; unblocks 3 customer deployments in July.
-**Eng translation**: Replaced batch-and-flush with async generator in scheduling loop. p99 from 500ms to 300ms at 200 concurrent requests. 12 integration tests added.
-**External translation**: AI responses are now 40% faster, enabling real-time interactions for enterprise applications.
+**Exec**: Reduced AI response time by 40%, meeting the enterprise SLA commitment.
+**PM**: Latency SLO now met for enterprise tier; unblocks 3 customer deployments in July.
+**Eng**: Replaced batch-and-flush with async generator in scheduling loop. p99 from 500ms to 300ms at 200 concurrent requests. 12 integration tests added.
+**External**: AI responses are now 40% faster, enabling real-time interactions for enterprise applications.
 
-Notice: each version emphasizes what that audience uses to make decisions. Apply this principle to every item in the report.
+### Example 2: Infrastructure change
+
+**Engineering fact**: Migrated model serving from single-node to Kubernetes with autoscaling, handling 10x previous peak load.
+**Exec**: AI platform now scales automatically to meet demand, eliminating the manual capacity planning that caused 2 outages last quarter.
+**PM**: Model serving capacity is no longer a blocker for onboarding new customers. Onboarding timeline drops from 2 weeks to 2 days.
+**Eng**: Moved from single-node Docker Compose to k8s with HPA. Autoscales 2-20 replicas based on request queue depth. Tested to 5,000 concurrent requests with p99 under 200ms. Helm chart in PR #91.
+**External**: Our AI platform now handles traffic spikes automatically, so your applications get consistent performance during peak usage.
+
+### Example 3: Bug fix with customer impact
+
+**Engineering fact**: Fixed token counting bug causing 15% overcharging on batch inference since v2.3.
+**Exec**: Corrected a billing error affecting all batch API customers. Finance is processing credits. No customer complaints received, caught by internal audit.
+**PM**: Batch pricing now accurate. 23 affected customers will receive automatic credits. Updated billing FAQ shipped.
+**Eng**: Off-by-one in tokenizer was double-counting boundary tokens on batched requests. Fix in PR #38 (+28/-12 lines), backported to v2.3.1. Added regression test covering all batch size boundaries.
+**External**: We identified and corrected a billing calculation issue. Affected customers will receive automatic credits. No action needed on your part.
+
+Each version emphasizes what that audience uses to make decisions. Apply this principle to every item in the report.
 
 ## Data Gathering
 
