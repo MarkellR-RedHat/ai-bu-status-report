@@ -1,14 +1,14 @@
 # Stakeholder View Generator
 
-Generate the same status data tailored to a specific audience. Executives get business impact and timelines. PMs get feature status and dependencies. Engineers get technical detail and blockers. External stakeholders get polished highlights. Same data, different altitude.
+You are a strategic communications advisor. Your job is to translate the same work into the language each audience actually thinks in. This is not about hiding information or dumbing it down. It is about respecting how different people make decisions.
 
 ## Arguments
 
 $ARGUMENTS must include an audience type as the first argument:
-- **exec** - Executive/VP view: business impact, timelines, risks, resource needs
-- **pm** - Product Manager view: feature status, dependencies, sprint progress, customer impact
-- **eng** - Engineering view: technical detail, architecture decisions, code metrics, blockers
-- **external** - External stakeholder view: polished highlights, milestone progress, value delivered
+- **exec** - Executive/VP view: business outcomes, timelines, competitive position, resource asks
+- **pm** - Product Manager view: feature progress, sprint velocity, customer impact, dependencies
+- **eng** - Engineering view: architecture decisions, performance numbers, code-level specifics, blockers
+- **external** - External stakeholder view: polished capabilities, milestones, user benefits
 
 Additional optional arguments:
 - A timeframe (e.g., "last 2 weeks", "since 2025-06-01"). Defaults to the past 7 days.
@@ -20,269 +20,87 @@ If no audience is specified, default to "exec" and note the available options.
 
 ## Config File Support
 
-Check if `~/.status-config` exists. If it does, read it for defaults.
-
 ```bash
 if [ -f "$HOME/.status-config" ]; then
   cat "$HOME/.status-config"
 fi
 ```
 
-## Thinking Process
+## Calibration: Same Fact, Four Translations
 
-Before generating any output, work through this chain of thought silently:
+Before you generate anything, internalize this example. The same engineering fact must become genuinely different content for each audience:
 
-1. **Gather all data first**: The underlying data is the same regardless of audience. Collect everything before filtering.
-2. **Apply the audience filter**: What does this audience care about? What would they skip? What would confuse them?
-3. **Choose the right altitude**: Execs think in quarters and business outcomes. PMs think in sprints and features. Engineers think in PRs and architecture. External stakeholders think in value and milestones.
-4. **Translate, do not omit**: A "reduced p99 latency by 200ms" becomes "improved application response time by 40%" for execs, "latency SLO now met for the enterprise tier" for PMs, "optimized the vLLM scheduling loop, cutting p99 from 500ms to 300ms" for engineers, and "faster AI responses for your users" for external.
-5. **Self-critique**: Would this audience actually read this? If an exec sees PR numbers, you failed. If an engineer does not see technical depth, you failed.
+**Engineering fact**: Redesigned vLLM scheduling loop, p99 dropped from 500ms to 300ms.
+**Exec translation**: Reduced AI response time by 40%, meeting the enterprise SLA commitment.
+**PM translation**: Latency SLO now met for enterprise tier; unblocks 3 customer deployments in July.
+**Eng translation**: Replaced batch-and-flush with async generator in scheduling loop. p99 from 500ms to 300ms at 200 concurrent requests. 12 integration tests added.
+**External translation**: AI responses are now 40% faster, enabling real-time interactions for enterprise applications.
 
-## Instructions
+Notice: each version emphasizes what that audience uses to make decisions. Apply this principle to every item in the report.
 
-### Step 1: Gather All Data
+## Data Gathering
 
-Use the same data-gathering approach as the status report and team report:
+Collect all data before applying any audience lens. The underlying facts are identical across views.
 
 ```bash
-# Git activity
 git config user.email
 git config user.name
 git log --since="<timeframe>" --author="<user>" --pretty=format:"%h %s (%ar)" --no-merges
 git log --since="<timeframe>" --author="<user>" --no-merges --shortstat
 
-# PRs
 gh search prs --author=@me --created=">$(date -v-7d +%Y-%m-%d)" --json title,url,state,repository,createdAt,additions,deletions,mergedAt
 gh search prs --author=@me --merged=">$(date -v-7d +%Y-%m-%d)" --json title,url,repository,additions,deletions
 gh search prs --reviewed-by=@me --created=">$(date -v-7d +%Y-%m-%d)" --json title,url,state,repository
 
-# Issues
 gh search issues --assignee=@me --closed=">$(date -v-7d +%Y-%m-%d)" --json title,url,repository,closedAt
 gh search issues --assignee=@me --state=open --json title,url,repository,labels,milestone
 
-# Open/stale PRs for risk detection
 gh search prs --author=@me --state=open --json title,url,repository,createdAt,reviewDecision
 ```
 
 For team scope, repeat for each team member.
 
-### Step 2: Route to Audience-Specific Output
+## Audience-Specific Output
 
-Based on the audience argument, generate ONE of the following four report formats.
+Based on the audience argument, generate ONE of the following. Think in the audience's native frame, not yours.
 
----
+### If audience = "exec"
 
-## If audience = "exec"
+Think in quarters, revenue, customers, and competitive position. Executives allocate resources and set direction. They need to know what moved the business, what is at risk, and what they need to decide.
 
-### Executive Status Update
+**Format**: Status color (GREEN/YELLOW/RED) with one-sentence justification. A "Bottom Line" paragraph (3-5 sentences) translating all work into business outcomes. Key outcomes ranked by business impact. A timeline table showing milestones by target date and status. Resource or decision needs only if a specific ask exists. No PR numbers, no repo names, no line counts. Timelines in weeks or quarters. Risks stated as business impact ("Q3 revenue milestone at risk"), never as engineering process ("PR #42 needs review"). Target length: under 500 words.
 
-**Period**: [start date] to [end date]
-**Status**: [GREEN / YELLOW / RED] - [one-sentence justification with evidence]
+### If audience = "pm"
 
-#### Bottom Line
+Think in sprints, user stories, backlogs, and customer commitments. PMs orchestrate delivery. They need to know what shipped relative to the plan, what shifted, what dependencies could slip, and what customers will see.
 
-One paragraph, 3-5 sentences. Structure:
-1. What shipped and its business impact (not technical description)
-2. Key metric or milestone progress
-3. The one thing that needs executive attention (if any)
+**Format**: Sprint identification if detectable from milestones. A status summary (2-3 sentences) on features shipped, sprint progress, and scope changes. A feature status table (feature, status, progress, dependencies, notes). Shipped items grouped by feature or user story with PR links. A dependency/blocker table (dependency, status, impact if delayed, owner). Sprint velocity comparison (items completed, PRs merged, scope changes vs. last sprint). Customer impact for each shipped item stated in product terms. Coming next sprint with priority and owner. Target length: up to 1000 words.
 
-Rules for exec view:
-- No PR numbers, no line counts, no repo names unless the exec specifically tracks that repo
-- Translate all technical work to business outcomes: "reduced inference cost by 20%" not "optimized GPU scheduling"
-- Timelines in weeks or quarters, not days
-- Risks stated as business impact: "Q3 milestone at risk" not "PR #42 needs review"
+### If audience = "eng"
 
-#### Key Outcomes This Period
+Keep full technical depth. Engineers build the system. They need architecture decisions, performance data, code-level context, and honest assessment of technical debt and blockers.
 
-Rank-ordered by business impact:
-1. **[Business outcome]** - [Impact in business terms]
-2. **[Business outcome]** - [Impact in business terms]
-3. **[Business outcome]** - [Impact in business terms]
+**Format**: Repos with activity listed up front. A technical summary (2-3 sentences) covering what was built, architecture decisions, and technical debt addressed. Metrics table (commits, PRs merged, PRs reviewed, issues closed, lines added/removed, avg PR size, avg PR cycle time). Shipped items grouped by component or repo with PR links, line counts, technical detail on approach, testing notes, and performance impact. Architecture decisions with context, options considered, and rationale. Technical debt table (item, type, severity, status). Code review activity (reviewer, PRs reviewed, avg response time). Blockers with type, impact, and recommended fix. Open technical questions with context. Target length: up to 1000 words.
 
-#### Timeline Status
+### If audience = "external"
 
-| Milestone | Target Date | Status | Notes |
-|-----------|------------|--------|-------|
-| [Milestone] | [Date] | [On Track/At Risk/Delayed] | [Brief context] |
+Polish everything. No internal jargon whatsoever. External audiences (customers, partners, the public) evaluate whether your project delivers value to them. They do not care about your process.
 
-#### Resource or Decision Needs
+**Format**: 3-5 bullet point highlights in professional language, each stating what was delivered and why it matters to users. A progress paragraph (4-6 sentences) suitable for a blog post or partner newsletter, with no internal metrics, repo names, or PR numbers. A milestone table (milestone, status, expected completion by date or quarter). 2-3 forward-looking items stated as user benefits. Links to any public resources (blog posts, docs, release notes, demos) if they exist. Target length: under 500 words.
 
-Only include if there is a specific ask. If nothing is needed, omit entirely.
-- [Specific need]: [Why and what is the impact of not addressing it]
+## Quality Gate
 
----
+Before outputting, verify against the audience:
 
-## If audience = "pm"
+- **exec**: Does every item connect to a business outcome? Would a VP read this without asking "so what?" Zero technical jargon.
+- **pm**: Are features described in user story terms? Are dependencies explicit with owners? Is velocity tracked?
+- **eng**: Is technical depth present? Would a senior engineer find this useful for an architecture review?
+- **external**: Could this be shared publicly without embarrassment? No org names, no internal tools, no jargon.
 
-### Product Status Update
-
-**Period**: [start date] to [end date]
-**Sprint**: [sprint name/number if identifiable from milestone data]
-
-#### Status Summary
-
-2-3 sentences covering: features shipped, sprint progress, and any dependency or scope changes.
-
-#### Feature Status
-
-| Feature / Epic | Status | Progress | Dependencies | Notes |
-|---------------|--------|----------|--------------|-------|
-| [Feature name] | [Shipped/In Progress/Blocked/Not Started] | [X of Y items done] | [List or "None"] | [Brief context] |
-
-#### What Shipped
-
-Grouped by feature or user story, not by repo:
-
-**[Feature/Story Name]**
-- [What was delivered in user-facing terms] ([PR #NNN](url))
-- [What was delivered] ([PR #NNN](url))
-
-#### Dependencies and Blockers
-
-| Dependency | Status | Impact if Delayed | Owner |
-|-----------|--------|-------------------|-------|
-| [Dependency] | [Clear/At Risk/Blocked] | [What gets delayed] | [@owner] |
-
-#### Sprint Velocity
-
-| Metric | This Sprint | Last Sprint | Trend |
-|--------|------------|-------------|-------|
-| Items Completed | X | Y | ↑/→/↓ |
-| PRs Merged | X | Y | ↑/→/↓ |
-| Scope Changes | X items added, Y removed | | |
-
-#### Customer Impact
-
-For items that shipped:
-- [Feature]: [How it affects users/customers, stated in product terms]
-
-#### Coming Next Sprint
-
-- [Feature/item] - [Priority: P0/P1/P2] - [Owner]
-
----
-
-## If audience = "eng"
-
-### Engineering Status Update
-
-**Period**: [start date] to [end date]
-**Repos**: [list of repos with activity]
-
-#### Technical Summary
-
-2-3 sentences on the engineering work: what was built, what architectural decisions were made, what technical debt was addressed.
-
-#### Metrics
-
-| Metric | Count |
-|--------|-------|
-| Commits | X |
-| PRs Merged | X |
-| PRs Reviewed | X |
-| Issues Closed | X |
-| Lines Added | +X |
-| Lines Removed | -X |
-| Avg PR Size | X lines |
-| Avg PR Cycle Time | X days |
-
-#### What Shipped (Technical Detail)
-
-Grouped by system component or repo:
-
-**[Component/Repo]**
-- **[PR Title]** ([PR #NNN](url)) - +X/-Y lines
-  - Technical detail: [What changed architecturally, what approach was used, why]
-  - Testing: [What tests were added or updated]
-  - Performance impact: [If measurable]
-
-#### Architecture Decisions
-
-List any significant technical decisions made this period:
-- **[Decision]**: [Context, options considered, rationale for choice]
-
-#### Technical Debt
-
-| Item | Type | Severity | Status |
-|------|------|----------|--------|
-| [Debt item] | [Code/Infra/Test/Doc] | [High/Med/Low] | [Addressed/Identified/Deferred] |
-
-#### Code Review Activity
-
-| Reviewer | PRs Reviewed | Avg Response Time | Notable Reviews |
-|----------|-------------|-------------------|-----------------|
-| @member | X | X hours/days | [PR #NNN - brief note] |
-
-#### Blockers and Risks (Technical)
-
-| Issue | Type | Impact | Recommended Fix |
-|-------|------|--------|-----------------|
-| [Description with link] | [CI/Review/Dependency/Design] | [What it blocks] | [Specific technical action] |
-
-#### Open Questions
-
-List any unresolved technical questions or design decisions pending:
-- [Question] - [Context and who needs to weigh in]
-
----
-
-## If audience = "external"
-
-### Project Update
-
-**Period**: [start date] to [end date]
-**Project**: [project name inferred from repos or arguments]
-
-#### Highlights
-
-Write 3-5 bullet points in polished, professional language suitable for sharing with customers, partners, or the public. Focus on value delivered, not internal process.
-
-- **[Highlight]**: [What was delivered and why it matters to users, stated without internal jargon]
-- **[Highlight]**: [Value-focused description]
-- **[Highlight]**: [User benefit]
-
-#### Progress Summary
-
-A brief, accessible paragraph (4-6 sentences) describing the project's trajectory. Use language appropriate for a blog post or partner newsletter. No internal metrics, no repo names, no PR numbers.
-
-#### Milestones
-
-| Milestone | Status | Expected Completion |
-|-----------|--------|-------------------|
-| [User-facing milestone] | [Complete/In Progress/Upcoming] | [Date or quarter] |
-
-#### What Is Coming Next
-
-2-3 forward-looking items, stated as user benefits:
-- [Upcoming capability and why it matters]
-- [Upcoming improvement and who it helps]
-
-#### Resources
-
-Include links to any public-facing outputs from this period:
-- [Blog posts, documentation, release notes, demos]
-
-If no public resources exist, omit this section.
-
----
-
-### Final Quality Check
-
-Before outputting, verify based on the audience:
-
-**For exec**: No PR numbers in the body. No repo names unless exec-relevant. Every item translates to business impact. Status color is justified.
-
-**For pm**: Features are described in user story terms, not code terms. Dependencies are explicit. Sprint velocity is tracked.
-
-**For eng**: Technical depth is present. Architecture decisions are documented. Metrics include code-level detail (lines, cycle time, PR sizes).
-
-**For external**: No internal jargon. No org names or internal tools. Everything is stated in terms of user value. Professional tone suitable for public sharing.
-
-### Output Rules
+## Output Rules
 
 - Parse the audience from the first word of $ARGUMENTS. If it does not match exec/pm/eng/external, ask the user to specify.
-- Use the same underlying data for all views. The difference is in framing, altitude, and detail level.
+- Use the same underlying data for all views. The difference is in how you think about the data, not which data you show.
 - Do not fabricate data for any audience.
 - Write in active voice for all audiences.
-- Exec and external views should be shorter (under 500 words). PM and eng views can be longer (up to 1000 words).
-- If no audience is specified, default to exec and include a note: "Specify an audience for a tailored view: exec, pm, eng, or external."
+- If no audience is specified, default to exec and include: "Specify an audience for a tailored view: exec, pm, eng, or external."

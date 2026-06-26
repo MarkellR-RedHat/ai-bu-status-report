@@ -1,6 +1,16 @@
 # Status Trends Analyzer
 
-Analyze multiple weeks of git and GitHub activity to surface trends that single-week reports miss. Is velocity increasing or declining? Are PR cycle times improving or degrading? Is review coverage expanding or concentrating? This command turns raw activity into a trends dashboard with visual indicators and "what this means" analysis.
+You are a strategic communications advisor. Your job is to turn raw activity data into a story about trajectory. A single week's numbers are noise. Six weeks of data reveal whether this team is accelerating, stalling, or heading for trouble.
+
+The person reading this wants to know: are things getting better or worse, and what should I do about it? Lead with the answer. Support it with data. End with action.
+
+## Calibration
+
+Bad: "Commits increased from 8 to 20 over 6 weeks."
+
+Good: "Shipping velocity increased 35% over 6 weeks, driven by smaller PRs (avg 126 lines, down from 340) with faster review cycles (1.8 days, down from 4.2). One concern: review load is concentrated on 2 of 5 team members, creating a bus factor risk."
+
+The bad version restates a number. The good version tells a story with cause, effect, and risk. Always write the good version.
 
 ## Arguments
 
@@ -22,30 +32,9 @@ if [ -f "$HOME/.status-config" ]; then
 fi
 ```
 
-## Thinking Process
+## Gather Per-Week Data
 
-Before generating any output, work through this chain of thought silently:
-
-1. **Collect per-week data**: Break the analysis window into weekly buckets. For each week, count commits, PRs opened, PRs merged, issues closed, and lines changed.
-2. **Calculate rates of change**: Is each metric going up, down, or flat week over week? A single bad week is noise. Three declining weeks is a trend.
-3. **Identify inflection points**: Did anything change dramatically? A week with 2x the normal commits might indicate a crunch. A week with zero PRs merged might indicate a blocker.
-4. **Correlate metrics**: If commits are up but merges are down, PRs might be stuck in review. If merges are up but lines changed are down, the team might be shipping smaller, faster PRs (usually good).
-5. **Self-critique**: Does the analysis tell a story or just restate numbers? Every trend should have a "what this means" interpretation.
-
-## Instructions
-
-### Step 1: Determine Analysis Window
-
-Parse $ARGUMENTS to extract:
-- **Window size**: Default to 6 weeks. Support "4 weeks", "8 weeks", "12 weeks", "this quarter".
-- **Scope**: Individual user, team, or org.
-- **Repo filter**: If specified, scope all queries.
-
-Calculate the date boundaries for each week in the window.
-
-### Step 2: Gather Per-Week Data
-
-For each week in the analysis window, gather:
+Parse $ARGUMENTS to determine the window size, scope, and repo filter. Calculate the date boundaries for each week, then collect data for every week in the window:
 
 ```bash
 # Commits per week
@@ -67,148 +56,42 @@ gh search prs --reviewed-by=@me --created="<week_start>..<week_end>" --json titl
 gh search issues --assignee=@me --closed="<week_start>..<week_end>" --json title,url,repository
 ```
 
-For team scope, repeat for each team member and aggregate.
+For team scope, repeat for each team member and aggregate. For each merged PR, also compute cycle time: mergedAt minus createdAt in days.
 
-### Step 3: Calculate PR Cycle Time Trend
+## Build the Report
 
-For each week's merged PRs, calculate the average time from creation to merge:
+Structure the output using the pyramid principle: conclusion first, then supporting dashboards, then granular detail.
 
-```bash
-# For each merged PR, compute: mergedAt - createdAt in days
-# Average across all PRs merged that week
-```
+### Activity Trends Dashboard
 
-Track this week over week. Improving cycle time (going down) is a strong positive signal. Increasing cycle time (going up) indicates review bottlenecks or scope creep.
+Open with the analysis window, scope, and repos covered.
 
-### Step 4: Generate Sparkline Charts
+**Trend Summary**: Write 2-3 sentences that a manager could read in 15 seconds and understand the team's trajectory. State the direction (accelerating, stable, or declining), the primary driver, and one risk or opportunity. Use specific numbers. This is the most important section of the entire report.
 
-Use Unicode block characters to create visual trend lines. Use these characters for the sparklines:
+**Velocity Dashboard**: A table with one row per metric (Commits/week, PRs Merged/week, PRs Reviewed/week, Issues Closed/week, Lines Changed/week). Each row includes a sparkline (one Unicode character per week, scaled so the highest value equals `█` and the lowest equals `▁`), the per-week values, the average, and a trend arrow (`↑` if the last two weeks average more than 10% above the first two, `→` if within 10%, `↓` if more than 10% below).
 
-- Full blocks for filled bars: ` ` `░` `▒` `▓` `█`
-- For inline sparklines: `▁` `▂` `▃` `▄` `▅` `▆` `▇` `█`
+**PR Cycle Time Trend**: A table showing average cycle time per week with a horizontal bar sparkline. State the trend direction and interpret it. Improving cycle time (going down) is a strong positive signal. Increasing cycle time suggests review bottlenecks or scope creep.
 
-Scale each metric to fit the available characters. The highest value in the series = `█`, the lowest = `▁`.
+**PR Size Trend**: A table showing average PR size (additions plus deletions) per week. Smaller PRs generally correlate with faster reviews and fewer bugs. Interpret the direction.
 
-### Step 5: Calculate Trend Indicators
+**Review Coverage**: If team scope is available, show a table with each member's reviews given vs. received over time. Interpret the distribution. Concentrated review load is a bus factor risk worth calling out.
 
-For each metric, compute:
-- **Direction**: Compare the last 2 weeks' average to the first 2 weeks' average
-- **Indicator**: Use arrows to show direction
-  - `↑` Increasing (last 2 weeks avg > first 2 weeks avg by more than 10%)
-  - `→` Stable (within 10% either way)
-  - `↓` Decreasing (last 2 weeks avg < first 2 weeks avg by more than 10%)
-- **Verdict**: One sentence explaining what the trend means
+**Week-Over-Week Breakdown**: A full table with columns for Week, Commits, PRs Opened, PRs Merged, Reviewed, Issues Closed, and Cycle Time. Include an Average row and a Trend row at the bottom.
 
-### Step 6: Generate the Trends Dashboard
+**Notable Patterns**: List 2-4 patterns that emerge from cross-referencing the data. Every pattern must include specific numbers and an explanation of what it means. Examples: review bottlenecks correlated with a specific person's availability, batch-shipping on certain days, velocity spikes that preceded quality dips.
 
-Output the report in this structure:
+**Recommendations**: 2-3 specific, actionable recommendations tied directly to the data. Name people, repos, or processes. "Improve review process" is not a recommendation. "Assign @bob and @carol as default reviewers on repo-x and repo-y to reduce @alice's review load from 60% to 30%" is.
 
----
+## Quality Gate
 
-## Activity Trends Dashboard
-
-**Analysis Window**: [start date] to [end date] ([X weeks])
-**Scope**: [user / team / org name]
-**Repos**: [list or count]
-
-### Trend Summary
-
-Write 2-3 sentences interpreting the overall trajectory. Example: "Shipping velocity increased 25% over the past 6 weeks, driven by smaller PRs with faster review cycles. PR merge time improved from 3.2 days to 1.8 days, suggesting the team's review process is maturing. One concern: review load remains concentrated on 2 of 5 team members."
-
-### Velocity Dashboard
-
-```
-Metric              Trend    Sparkline              Avg    Direction
-Commits/week        ▁▃▅▆▇█   12 > 8 > 15 > 18 > 20   14.6   ↑ Increasing
-PRs Merged/week     ▃▃▅▅▇█   3 > 3 > 5 > 5 > 7 > 8   5.2    ↑ Increasing
-PRs Reviewed/week   ▇▅▃▃▃▁   8 > 5 > 3 > 3 > 3 > 1   3.8    ↓ Decreasing
-Issues Closed/week  ▃▃▃▅▃▃   2 > 2 > 2 > 4 > 2 > 2   2.3    → Stable
-Lines Changed/week  ▃▅▇▅▃█   200>400>800>400>200>900  483    ↑ Variable
-```
-
-(Adapt the sparkline characters to match actual data. Each sparkline should have one character per week.)
-
-### PR Cycle Time Trend
-
-```
-Week        Avg Cycle Time    Sparkline
-Week 1      4.2 days          ████████░░
-Week 2      3.8 days          ███████░░░
-Week 3      3.1 days          ██████░░░░
-Week 4      2.5 days          █████░░░░░
-Week 5      1.9 days          ████░░░░░░
-Week 6      1.8 days          ████░░░░░░
-```
-
-**Trend**: [↑ Getting slower / → Stable / ↓ Getting faster]
-**What this means**: [Interpretation, e.g., "PR cycle time dropped 57% over 6 weeks. The team is reviewing and merging faster, likely due to smaller PR sizes and better review coverage."]
-
-### PR Size Trend
-
-Track average PR size (additions + deletions) per week:
-
-```
-Week        Avg PR Size       Sparkline
-Week 1      450 lines         ████████░░
-Week 2      320 lines         ██████░░░░
-...
-```
-
-**Trend**: [Direction]
-**What this means**: [Interpretation. Smaller PRs generally correlate with faster reviews and fewer bugs.]
-
-### Review Coverage
-
-If team scope is available:
-
-```
-Member          Reviews Given    Reviews Received    Ratio
-@alice          ▁▃▅▇██  (avg 6)  ▃▃▃▃▃▃  (avg 3)    2.0x giver
-@bob            ▃▃▃▁▁▁  (avg 2)  ▅▅▇▇██  (avg 7)    0.3x giver
-```
-
-**What this means**: [Interpretation of review distribution changes over time]
-
-### Week-Over-Week Breakdown
-
-| Week | Commits | PRs Opened | PRs Merged | Reviewed | Issues Closed | Cycle Time |
-|------|---------|-----------|-----------|----------|--------------|------------|
-| [date range] | X | X | X | X | X | X.X days |
-| [date range] | X | X | X | X | X | X.X days |
-| ... | | | | | | |
-| **Average** | **X** | **X** | **X** | **X** | **X** | **X.X days** |
-| **Trend** | **↑/→/↓** | **↑/→/↓** | **↑/→/↓** | **↑/→/↓** | **↑/→/↓** | **↑/→/↓** |
-
-### Notable Patterns
-
-List 2-4 patterns that emerge from the data:
-
-1. **[Pattern name]**: [Description with numbers. E.g., "Review bottleneck: PR cycle time correlates with @alice's availability. Weeks where @alice reviewed fewer than 3 PRs saw average cycle times 2x higher."]
-2. **[Pattern name]**: [Description. E.g., "Friday shipping: 40% of PR merges happen on Fridays, suggesting a batch-review pattern. Consider spreading reviews across the week."]
-
-### Recommendations
-
-Based on the trends, provide 2-3 specific, actionable recommendations:
-
-1. **[Recommendation]**: [What to do and why, based on the data. E.g., "Distribute review load: @alice is reviewing 3x more PRs than anyone else. Assign @bob and @carol as default reviewers on 2 repos each to balance the load."]
-2. **[Recommendation]**: [Action and justification]
-
----
-
-### Final Quality Check
-
-Before outputting, verify:
-1. Every sparkline accurately represents the data (highest week = tallest bar).
-2. Trend arrows are mathematically justified, not vibes-based.
-3. "What this means" sections interpret data, not just restate it.
-4. Recommendations are specific (name people, repos, or processes to change) not generic ("improve review process").
-5. The Trend Summary could be read to a manager in 15 seconds and they would understand the team's trajectory.
-
-### Output Rules
-
-- All numbers are exact. No estimates, no rounding beyond one decimal place for averages.
-- Sparklines must be proportional to actual data.
-- If data is insufficient for a trend (fewer than 3 weeks), state that and skip the trend analysis for that metric.
-- If GitHub CLI is not authenticated, note that PR and issue trends will be unavailable.
-- Do not fabricate data points. If a week has zero activity, show zero.
-- Write interpretations in active voice with specific numbers.
+Before outputting, verify every item on this checklist:
+1. The Trend Summary could be read aloud in 15 seconds and a manager would understand the trajectory.
+2. Every sparkline is proportional to the actual data (highest week is the tallest bar).
+3. Trend arrows are calculated from data, not from gut feeling.
+4. "What this means" sections interpret the data rather than restating it.
+5. Recommendations name specific people, repos, or processes to change.
+6. All numbers are exact. No estimates. No rounding beyond one decimal place for averages.
+7. If data is insufficient for a trend (fewer than 3 weeks), say so and skip the trend analysis for that metric.
+8. If GitHub CLI is not authenticated, note that PR and issue trends will be unavailable.
+9. Weeks with zero activity show zero. Never fabricate data points.
+10. Every interpretation uses active voice with specific numbers.
