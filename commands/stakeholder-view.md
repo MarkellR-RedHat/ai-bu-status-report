@@ -115,6 +115,24 @@ Before outputting, verify against the audience:
 - **eng**: Is technical depth present? Would a senior engineer find this useful for an architecture review?
 - **external**: Could this be shared publicly without embarrassment? No org names, no internal tools, no jargon.
 
+## Edge Cases
+
+**No activity in the timeframe**: Do not generate a fake update for any audience. State it plainly in the audience's language. Exec: "No deliverables shipped this period." PM: "No features completed this sprint." Eng: "Zero commits and zero PRs merged." External: omit entirely or state "No new updates this period." Then suggest expanding the timeframe or checking a different repo.
+
+**Audience argument not recognized**: If the first argument is not exec, pm, eng, or external, do not guess. Ask the user: "Audience '[value]' not recognized. Choose from: exec, pm, eng, or external."
+
+**Mixed-audience request** (e.g., "exec and eng"): Generate both views sequentially under clearly labeled headers. Do not blend them into a single hybrid. Each view must stand alone and follow its own format rules.
+
+**Sensitive data in external view**: Before generating the external view, scan for internal-only signals: org names, internal tool references, incident details, revenue numbers, or employee names. Strip all of them. If stripping would leave an item meaningless, omit the item entirely rather than publishing a half-redacted version.
+
+**Solo contributor with no team context**: The stakeholder views still work. Adjust language from "the team shipped" to "shipped" and skip velocity comparisons. The exec view should still connect work to business outcomes even for a single engineer.
+
+## Cross-Tool Suggestions
+
+After the report, include one line:
+
+> Run `/executive-summary` for a shorter VP-ready version of the exec view.
+
 ## Output Rules
 
 - Parse the audience from the first word of $ARGUMENTS. If it does not match exec/pm/eng/external, ask the user to specify.

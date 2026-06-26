@@ -90,6 +90,24 @@ Open with the analysis window, scope, and repos covered.
 
 **Recommendations**: 2-3 specific, actionable recommendations tied directly to the data. Name people, repos, or processes. "Improve review process" is not a recommendation. "Assign @bob and @carol as default reviewers on repo-x and repo-y to reduce @alice's review load from 60% to 30%" is.
 
+## Edge Cases
+
+**Fewer than 3 weeks of data**: Trend analysis requires at least 3 data points. If the repo or user has fewer than 3 weeks of history, skip sparklines and trend arrows. State: "Insufficient data for trend analysis ([X] weeks available, 3 required)." Show the raw weekly numbers in a table and note that trends will become available as more weeks accumulate.
+
+**All-zero weeks in the middle of the window**: Do not skip zero-activity weeks or compress the timeline. Show them as zeroes. Interpret the gap: "Weeks 3-4 show zero activity, consistent with [holiday/PTO/incident response]. Velocity recovered in week 5." Omitting zero weeks distorts the trend line and hides real patterns.
+
+**Single contributor analyzing a team scope**: If the user specifies a team scope but only one member has activity, note it: "Only @alice has activity in the specified window. Review coverage and distribution analysis are not meaningful for a single contributor." Fall back to individual trend analysis and skip the review distribution table.
+
+**Extremely high PR cycle time (30+ days)**: Flag PRs that are dragging the average. "Average cycle time is 12.4 days, but this is skewed by PR #87 (open 42 days). Excluding that outlier, average drops to 3.1 days." Always show both the raw and adjusted averages so the reader can decide which matters.
+
+**GitHub CLI not authenticated**: Fall back to `git log` data. Note that PR cycle time, review coverage, and issue trends require `gh auth login`. Produce the commit velocity trend from git data alone and label the report as partial.
+
+## Cross-Tool Suggestions
+
+After the report, include one line:
+
+> Run `/risk-register` to turn any declining trends into tracked risks with owners and mitigation plans.
+
 ## Quality Gate
 
 Before outputting, verify every item on this checklist:

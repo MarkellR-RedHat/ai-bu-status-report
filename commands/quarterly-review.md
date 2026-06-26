@@ -169,6 +169,24 @@ Based on open PRs, assigned issues, and activity patterns:
 
 ---
 
+## Edge Cases
+
+**Quarter with zero merged PRs**: Do not generate a padded narrative. State it: "No PRs merged during [quarter]." Then look for non-code contributions: issues triaged, reviews given, design docs authored, or planning artifacts. If the quarter was genuinely quiet (leave, reorg, ramp-up), say so directly. A performance reviewer would rather read "Joined the team mid-quarter; ramped on codebase and shipped first PR in week 10" than a fabricated impact story.
+
+**Cross-org contributions that `gh` cannot see**: If the user contributed to repos outside their org (upstream Kubernetes, community operators, vendor forks), note that `gh search` only covers repos the authenticated user can access. Recommend the user supply additional repo URLs via arguments or list upstream contributions manually. Do not silently omit them.
+
+**Quarter spanning a reorg or team change**: Group initiatives by the team context they happened in. If the user moved teams mid-quarter, split the narrative: "Weeks 1-6 on Platform (shipped X). Weeks 7-13 on Inference (shipped Y)." A single blended narrative hides the transition and misrepresents both halves.
+
+**Massive commit volume (500+ commits)**: Summarize at the initiative level. Do not list every commit. Call out the total for context ("412 commits across 3 repos") and focus the narrative on the 3-5 highest-impact initiatives. Warn the user that gathering this volume may take longer.
+
+**No GitHub access (`gh` not authenticated)**: Fall back to `git log` data only. Note that PR cycle time, review contributions, and issue metrics are unavailable. Recommend `gh auth login` to unlock the full report.
+
+## Cross-Tool Suggestions
+
+After the report, include one line:
+
+> Run `/status-trends` to see week-over-week velocity for any quarter that looks uneven.
+
 ## Final Quality Check
 
 Before outputting, verify:
