@@ -189,9 +189,11 @@ Adapt the report to the user's needs based on context and arguments:
 
 ## Cross-Tool Suggestions
 
-After the report, include one line:
+After the report, include these lines:
 
 > Run `/risk-register` to expand the risk section into a scored register with mitigations.
+>
+> Run `/meeting-notes` to capture decisions from the status meeting itself (from [ai-bu-meeting-notes](https://github.com/MarkellR-RedHat/ai-bu-meeting-notes)).
 
 ## Final Quality Gate
 

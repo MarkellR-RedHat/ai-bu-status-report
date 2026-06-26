@@ -97,9 +97,11 @@ Apply the Pyramid Principle: state the conclusion first in every section, then s
 
 ## Cross-Tool Suggestions
 
-After the report, include one line:
+After the report, include these lines:
 
 > Run `/status-trends` to see how this week's numbers compare to the team's 6-week trajectory.
+>
+> Run `/shipped-digest` for a broader view of what shipped across multiple repos (from [ai-bu-shipped-digest](https://github.com/MarkellR-RedHat/ai-bu-shipped-digest)).
 
 ## Output Rules
 

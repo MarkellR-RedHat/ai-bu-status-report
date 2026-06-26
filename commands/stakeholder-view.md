@@ -129,9 +129,11 @@ Before outputting, verify against the audience:
 
 ## Cross-Tool Suggestions
 
-After the report, include one line:
+After the report, include these lines:
 
 > Run `/executive-summary` for a shorter VP-ready version of the exec view.
+>
+> Run `/message-polisher` to refine the output before sending it to stakeholders (from [ai-bu-message-polisher](https://github.com/MarkellR-RedHat/ai-bu-message-polisher)).
 
 ## Output Rules
 

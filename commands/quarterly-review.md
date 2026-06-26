@@ -183,9 +183,11 @@ Based on open PRs, assigned issues, and activity patterns:
 
 ## Cross-Tool Suggestions
 
-After the report, include one line:
+After the report, include these lines:
 
 > Run `/status-trends` to see week-over-week velocity for any quarter that looks uneven.
+>
+> Run `/cfp-generator` to turn a strong quarter into a conference talk proposal (from [ai-bu-cfp-generator](https://github.com/MarkellR-RedHat/ai-bu-cfp-generator)).
 
 ## Final Quality Check
 

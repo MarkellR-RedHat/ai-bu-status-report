@@ -54,7 +54,7 @@ That's it. The command scans your git history and GitHub activity, then generate
 | `/risk-register` | Formal risk register with likelihood/impact scoring and priority actions | Project reviews, escalation prep |
 | `/stakeholder-view` | Same data tailored to audience: exec, pm, eng, or external | Communicating the same work to different people |
 
-## Examples With Arguments
+## Examples
 
 ```bash
 # Narrow to a specific repo and timeframe
@@ -73,8 +73,6 @@ That's it. The command scans your git history and GitHub activity, then generate
 ```
 
 ## Sample Output
-
-### Status Report
 
 ```
 ## Weekly Status Report
@@ -105,7 +103,9 @@ has been open 3 days with no reviewer assigned.
 | PR #50 has no reviewer assigned | Medium | 3 days | Assign @akumar by Monday |
 ```
 
-### Stakeholder View: Same Data, Different Audience
+### Same Data, Different Audience
+
+With `/stakeholder-view`, the same week of work becomes three different reports:
 
 **Executive** (`/stakeholder-view exec`):
 > Completed 3 of 4 Q3 deliverables, reducing AI inference costs by 20% and enabling real-time model serving for enterprise customers.
@@ -116,6 +116,22 @@ has been open 3 days with no reviewer assigned.
 **PM** (`/stakeholder-view pm`):
 > Latency SLO now met for enterprise tier. Streaming inference unblocks 3 customer deployments in July. Quota API at risk without reviewer.
 
+## Workflow
+
+A typical Friday takes about 90 seconds:
+
+1. **`/status-report`** scans your week and generates a VP-ready report.
+2. **`/executive-summary`** distills it into a one-paragraph Slack update for your skip-level.
+3. **`/stakeholder-view pm`** gives you the same data reframed for your PM's sprint review.
+
+For deeper analysis:
+
+- **Monthly**: Run `/status-trends 8 weeks` to spot velocity changes before your manager asks about them.
+- **Quarterly**: Run `/quarterly-review Q2 2025` to generate a narrative ready to paste into a performance review.
+- **Before escalation meetings**: Run `/risk-register` to walk in with scored risks and specific asks, not vague concerns.
+
+One team reported that running `/status-report` on Fridays and `/quarterly-review` at review time cut their report-writing from 45 minutes per week to under 5. The bigger win: their reports started getting forwarded by their VP because every bullet had a number and a "so what."
+
 ## How It Works
 
 These are Claude Code slash commands: markdown files that act as prompt templates with embedded shell commands. When you run `/status-report`, Claude Code reads the command file, executes shell commands to gather your git and GitHub data, applies structured reasoning and quality checks, then formats the results.
@@ -125,6 +141,15 @@ Every report follows three principles:
 1. **Pyramid Principle**: Lead with the conclusion. Supporting detail comes after.
 2. **The "So What?" Test**: Every bullet includes impact. Not "Updated Helm chart" but "Updated Helm chart to support multi-model routing, unblocking Q3 milestone (PR #51)."
 3. **Honest Risk Surfacing**: Bad news stated directly, not buried. "PR #50 has been open 12 days with no reviewer" not "we continue to make progress."
+
+## Works With Other AI BU Tools
+
+These commands focus on turning git data into reports. For related workflows:
+
+- Run `/meeting-notes` ([ai-bu-meeting-notes](https://github.com/MarkellR-RedHat/ai-bu-meeting-notes)) to capture decisions from the status meeting itself.
+- Run `/message-polisher` ([ai-bu-message-polisher](https://github.com/MarkellR-RedHat/ai-bu-message-polisher)) to tighten an executive summary before sending it to leadership.
+- Run `/cfp-generator` ([ai-bu-cfp-generator](https://github.com/MarkellR-RedHat/ai-bu-cfp-generator)) to turn a strong quarterly review into a conference talk proposal.
+- Run `/shipped-digest` ([ai-bu-shipped-digest](https://github.com/MarkellR-RedHat/ai-bu-shipped-digest)) for a broader team-wide view of what shipped across multiple repos.
 
 ## Configuration (Optional)
 

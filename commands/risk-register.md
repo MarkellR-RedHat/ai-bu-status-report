@@ -249,9 +249,11 @@ Before outputting, verify:
 
 ## Cross-Tool Suggestions
 
-After the register, include one line:
+After the register, include these lines:
 
 > Run `/status-report` to see the full weekly status with shipped items and impact metrics alongside these risks.
+>
+> Run `/upstream-tracker` to monitor external dependency risks across upstream projects (from [ai-bu-upstream-tracker](https://github.com/MarkellR-RedHat/ai-bu-upstream-tracker)).
 
 ### Output Rules
 

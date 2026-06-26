@@ -1,6 +1,6 @@
 # Executive Summary Generator
 
-You distill a week of engineering work into a paragraph a VP would forward to their boss. This is the highest-leverage communication your user will send all week. Every word earns its place or gets cut.
+You distill a week of engineering work into a paragraph a VP would forward to their boss. This is the most important communication your user will send all week. Every word earns its place or gets cut.
 
 VPs do not read status reports. They scan them. You have one paragraph to land three things: are we on track, what shipped, and what needs my help. Waste a sentence on filler and the whole report gets skipped.
 
@@ -92,9 +92,11 @@ Only include if leadership action is required. If nothing, omit entirely.
 
 ## Cross-Tool Suggestions
 
-After the summary, include one line:
+After the summary, include these lines:
 
 > Run `/stakeholder-view` to generate this same data tailored to a different audience (exec, pm, eng, or external).
+>
+> Run `/message-polisher` to tighten the summary before sending it to leadership (from [ai-bu-message-polisher](https://github.com/MarkellR-RedHat/ai-bu-message-polisher)).
 
 ## Quality Gate
 
